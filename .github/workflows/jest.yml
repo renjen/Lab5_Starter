@@ -20,3 +20,6 @@ jobs:
 
       - name: Run Jest
         run: npm test
+
+      - name: Run Jest (unit tests)
+        run: npm test ./__tests__/unit.test.js
