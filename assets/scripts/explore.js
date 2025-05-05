@@ -14,7 +14,7 @@ function init() {
   function populateVoices() {
     voices = synth.getVoices();
 
-    // Clear existing options
+    // Avoid duplicate options
     voiceSelect.innerHTML = '<option value="select" disabled selected>Select Voice:</option>';
 
     voices.forEach(voice => {
@@ -25,14 +25,30 @@ function init() {
     });
   }
 
-  // Listen for voiceschanged and populate once voices are available
-  synth.addEventListener('voiceschanged', populateVoices);
+  // Try populating once in case voices are already loaded
+  populateVoices();
+
+  // Also listen for the voiceschanged event
+  if (typeof synth.onvoiceschanged !== 'undefined') {
+    synth.onvoiceschanged = populateVoices;
+  }
+
+  // Fallback: populate again after a short delay
+  setTimeout(() => {
+    if (voiceSelect.length <= 1) populateVoices();
+  }, 500);
 
   talkButton.addEventListener('click', () => {
-    const utterance = new SpeechSynthesisUtterance(textInput.value);
-    const selectedVoiceName = voiceSelect.value;
+    const text = textInput.value;
+    if (!text) return;
 
-    utterance.voice = voices.find(voice => voice.name === selectedVoiceName);
+    const utterance = new SpeechSynthesisUtterance(text);
+    const selectedVoiceName = voiceSelect.value;
+    const selectedVoice = voices.find(voice => voice.name === selectedVoiceName);
+
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+    }
 
     faceImage.src = 'assets/images/smiling-open.png';
     synth.speak(utterance);
