@@ -14,6 +14,9 @@ function init() {
   function populateVoices() {
     voices = synth.getVoices();
 
+    // Clear existing options
+    voiceSelect.innerHTML = '<option value="select" disabled selected>Select Voice:</option>';
+
     voices.forEach(voice => {
       const option = document.createElement('option');
       option.textContent = `${voice.name} (${voice.lang})`;
@@ -22,10 +25,8 @@ function init() {
     });
   }
 
-  populateVoices();
-  if (speechSynthesis.onvoiceschanged !== undefined) {
-    speechSynthesis.onvoiceschanged = populateVoices;
-  }
+  // Listen for voiceschanged and populate once voices are available
+  synth.addEventListener('voiceschanged', populateVoices);
 
   talkButton.addEventListener('click', () => {
     const utterance = new SpeechSynthesisUtterance(textInput.value);
