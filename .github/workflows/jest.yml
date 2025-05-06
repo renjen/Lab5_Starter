@@ -18,5 +18,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run Jest
-        run: npm test
+      - name: Run Jest (sum tests)
+        run: npm test ./__tests__/sum.test.js
+
+      - name: Run Jest (unit tests)
+        run: npm test ./__tests__/unit.test.js
